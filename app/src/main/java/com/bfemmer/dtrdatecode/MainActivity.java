@@ -45,8 +45,6 @@ public class MainActivity extends AppCompatActivity {
         // Initialize class variables
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         dateCodeTextView = (TextView) findViewById(R.id.datecode_value);
-
-        updateCodeDisplay();
     }
 
     @Override
