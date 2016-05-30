@@ -8,3 +8,5 @@ DTRDateCode is a simple Android mobile app that calculates the date shipped and 
 ![ScreenShot](dtrdatecode_screenshot.png)
 
 The app can be configured (via settings) to calculate surface conveyance date codes in accordance with paragraph B (including the 4-digit codes used for ocean conveyance), and air conveyance hour/day codes in accordance with paragraph C. For air conveyance hour codes, the program takes into account the local timezone. In addition, the app can reverse-calculate dates from an existing date code.
+
+*Note: the author is an Air Transportation Craftsman (2T271) with the 38th APS; hence, the squadron patch you see displayed on the app and in the screenshot above. Feel free to replace.*
