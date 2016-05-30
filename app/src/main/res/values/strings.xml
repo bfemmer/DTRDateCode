@@ -9,7 +9,7 @@
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
-    <string-array name="pref_manifest_type">
+    <string-array name="pref_conveyance_type">
         <item>Surface</item>
         <item>Ocean</item>
         <item>Air</item>

@@ -36,7 +36,6 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
     private TextView dateCodeTextView;
     private SharedPreferences sharedPreferences;
-    private DateCode dateCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +46,14 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         dateCodeTextView = (TextView) findViewById(R.id.datecode_value);
 
-        String manifestType = sharedPreferences.getString("manifest_list", ConveyanceType.Air.toString());
-        dateCodeTextView.setText(DateCode.getInstance(manifestType).getCode());
+        updateCodeDisplay();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        updateCodeDisplay();
     }
 
     @Override
@@ -70,5 +75,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    private void updateCodeDisplay() {
+        String manifestType = sharedPreferences.getString("conveyance_list", ConveyanceType.Air.toString());
+        dateCodeTextView.setText(DateCode.getInstance().getCode(manifestType));
     }
 }

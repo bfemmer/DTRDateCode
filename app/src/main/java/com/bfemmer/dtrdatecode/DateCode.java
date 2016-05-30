@@ -23,10 +23,7 @@ SOFTWARE.
  */
 package com.bfemmer.dtrdatecode;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -34,124 +31,127 @@ import java.util.TimeZone;
  */
 public class DateCode {
     private static DateCode instance = null;
-    private ConveyanceType conveyanceType;
-    private String[] hourCodes = {"A", "B", "C", "D",
+    private final String[] hourCodes = {"A", "B", "C", "D",
             "E", "F", "G","H", "J", "K", "L", "M", "N", "P",
             "Q", "R", "S", "T", "U","V", "W", "X", "Y", "Z"};
 
-    protected DateCode(ConveyanceType conveyanceType) {
-        this.conveyanceType = conveyanceType;
+    /**
+     * Empty constructor, not used publicly.
+     */
+    protected DateCode() {
+
     }
 
-    public static DateCode getInstance(String manifest) {
+    /**
+     * Primary method for instantiating objects of this class
+     * @return static instance of this class
+     */
+    public static DateCode getInstance() {
+        // Instantiate new instance if one doesn't exist
         if(instance == null) {
-            ConveyanceType conveyanceType = ConveyanceType.Air;
-
-            if (manifest.equals("Surface")) conveyanceType = ConveyanceType.Surface;
-            if (manifest.equals("Ocean")) conveyanceType = ConveyanceType.Ocean;
-
-            instance = new DateCode(conveyanceType);
+            instance = new DateCode();
         }
+
         return instance;
     }
 
     /**
-     * Gets the current date code in DTR format
      *
-     * @return Date code in HDD format
+     * @param conveyance String value of conveyance (Air, Surface, or Ocean)
+     * @return ConveyanceType object representation of string parameter
      */
-    public String getCode() {
-        return getCode(Calendar.getInstance(
-                TimeZone.getTimeZone("GMT")).getTime());
+    private ConveyanceType getConveyanceType(String conveyance) {
+        ConveyanceType conveyanceType = ConveyanceType.Air;
+        if (conveyance.equals("Surface")) conveyanceType = ConveyanceType.Surface;
+        if (conveyance.equals("Ocean")) conveyanceType = ConveyanceType.Ocean;
+
+        return conveyanceType;
     }
 
     /**
-     * Gets a specified date in mil format
+     * Generates date code.
      *
-     * @param date The date to calculate the SET for
-     * @return System Entry Time in HDD format
-     */
-    public String getCode(Date date) {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        calendar.setTime(date);
-
-        String setTime = hourCodes[calendar.get(Calendar.HOUR_OF_DAY)];
-        setTime += getJulianCode(calendar.get(Calendar.DAY_OF_YEAR));
-        return setTime;
-    }
-
-    /**
-     * Gets the current hour code
+     * Generates a DTR date code for the conveyance type defined in the parameter.
      *
-     * @return The hour code component of the SET
+     * @param conveyance Air, Surface, or Ocean
+     * @return Date code formatted for the given conveyance type
      */
-    public String getCurrentHourCode() {
+    public String getCode(String conveyance) {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
 
-        // Because the hour codes are specified to begin with minute #1 of the hour,
-        // subtract 1 hour if the time is exactly on the hour.
-        //if (calendar.get(Calendar.MINUTE) == 0) hour--;
+        // Convert string parameter into ConveyanceType object
+        ConveyanceType conveyanceType = getConveyanceType(conveyance);
 
-        return hourCodes[hour];
-    }
-
-    /**
-     * Gets the current hour code
-     *
-     * @param hour Number between 1 and 23
-     * @return The hour code component of the SET
-     */
-    public String getAlphaHourCode(int hour) {
-        return hourCodes[hour];
-    }
-
-    public String getJulianCode() {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        return getJulianCode(calendar.get(Calendar.DAY_OF_YEAR));
-    }
-
-    public String getJulianCode(int dayOfYear) {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        calendar.set(Calendar.DAY_OF_YEAR, dayOfYear);
-        int day = calendar.get(Calendar.DAY_OF_YEAR);
-
-        String dayCode = String.format("%02d", day);
-
-        if (dayCode.length() > 2) {
-            dayCode = dayCode.substring(dayCode.length() - 2);
-        }
-        return dayCode;
-    }
-
-    public List<Date> getDatesDayCode(String dayCode) {
-        String code;
-        List values = new ArrayList<Date>();
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        // The Julian date code is used for Ocean conveyance types
+        String code = getJulianDateCode();
 
         if (conveyanceType.equals(ConveyanceType.Air)) {
-            // Two-digit day code
-            if (dayCode.length() > 2) {
-                dayCode = dayCode.substring(dayCode.length() - 2);
+            // Truncate to 2 digits
+            if (code.length() > 2) {
+                code = code.substring(code.length() - 2);
             }
 
-            for (int dayOfYear = 1; dayOfYear <= 366; dayOfYear++) {
-                code = getJulianCode(dayOfYear);
-
-                if (code.equals(dayCode)) {
-                    calendar.set(Calendar.DAY_OF_YEAR, dayOfYear);
-                    values.add(calendar.getTime());
-                }
-            }
-        } else {
-            // Three-digit day code
-            if (dayCode.length() > 3) {
-                dayCode = dayCode.substring(dayCode.length() - 3);
-                calendar.set(Calendar.DAY_OF_YEAR, Integer.valueOf(dayCode));
-                values.add(calendar.getTime());
+            // Prepend hour code to Julian code
+            code = hourCodes[calendar.get(Calendar.HOUR_OF_DAY)] + code;
+        } else if (conveyanceType.equals(ConveyanceType.Surface)) {
+            // Truncate to 3 digits
+            if (code.length() > 3) {
+                code = code.substring(code.length() - 3);
             }
         }
 
-        return values;
+        return code;
     }
+
+    /**
+     * Returns a Julian date code
+     *
+     * The Julian date is a 4-digit string with the format consisting of the last digit of the
+     * current year followed by a 3 digit day of the year.
+     *
+     * @return Date code in the format YDDD
+     */
+    private String getJulianDateCode() {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        int day = calendar.get(Calendar.DAY_OF_YEAR);
+        int year = calendar.get(Calendar.YEAR);
+
+        // Get year and day-of-year into string variables
+        String yearCode = String.format("%04d", year);
+        String dayCode = String.format("%03d", day);
+
+        // Return concatenation of last digit of year and 3-digit day-of-year code
+        return yearCode.substring(yearCode.length() - 1) + dayCode;
+    }
+
+//    public List<Date> getDatesDayCode(String dayCode) {
+//        String code;
+//        List values = new ArrayList<Date>();
+//        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+//
+//        if (conveyanceType.equals(ConveyanceType.Air)) {
+//            // Two-digit day code
+//            if (dayCode.length() > 2) {
+//                dayCode = dayCode.substring(dayCode.length() - 2);
+//            }
+//
+//            for (int dayOfYear = 1; dayOfYear <= 366; dayOfYear++) {
+//                code = getJulianDateCode(dayOfYear);
+//
+//                if (code.equals(dayCode)) {
+//                    calendar.set(Calendar.DAY_OF_YEAR, dayOfYear);
+//                    values.add(calendar.getTime());
+//                }
+//            }
+//        } else {
+//            // Three-digit day code
+//            if (dayCode.length() > 3) {
+//                dayCode = dayCode.substring(dayCode.length() - 3);
+//                calendar.set(Calendar.DAY_OF_YEAR, Integer.valueOf(dayCode));
+//                values.add(calendar.getTime());
+//            }
+//        }
+//
+//        return values;
+//    }
 }

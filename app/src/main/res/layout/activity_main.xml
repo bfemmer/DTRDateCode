@@ -32,7 +32,7 @@
         android:text="Large Text"
         android:id="@+id/datecode_value"
         android:textStyle="bold"
-        android:textSize="48dp"
+        android:textSize="68dp"
         android:layout_below="@+id/datecode_label"
         android:layout_centerHorizontal="true" />
 
