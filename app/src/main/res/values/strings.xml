@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">DTRDateCode</string>
-    <string name="dsrc_label">Current Date Shipped and Received Code</string>
+    <string name="dsrc_label">Date Shipped and Received Code</string>
     <string name="title_activity_settings">Settings</string>
     <string name="label_conveyance_type">Movement Conveyance Type</string>
+    <string name="label_convert_button">Calculate Calendar Date From Code</string>
 
     <!-- Strings related to Settings -->
 
