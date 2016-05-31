@@ -24,6 +24,7 @@ SOFTWARE.
 package com.bfemmer.dtrdatecode;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -32,8 +33,8 @@ import java.util.TimeZone;
 public class DateCode {
     private static DateCode instance = null;
     private final String[] hourCodes = {"A", "B", "C", "D",
-            "E", "F", "G","H", "J", "K", "L", "M", "N", "P",
-            "Q", "R", "S", "T", "U","V", "W", "X", "Y", "Z"};
+            "E", "F", "G", "H", "J", "K", "L", "M", "N", "P",
+            "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
     /**
      * Empty constructor, not used publicly.
@@ -56,6 +57,7 @@ public class DateCode {
     }
 
     /**
+     * Generates ConveyanceType object for string parameters
      *
      * @param conveyance String value of conveyance (Air, Surface, or Ocean)
      * @return ConveyanceType object representation of string parameter
@@ -78,80 +80,98 @@ public class DateCode {
      */
     public String getCode(String conveyance) {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        return getCode(conveyance, calendar);
+    }
+
+    /**
+     * Generates a DTR code
+     *
+     * @param conveyance Type of conveyance (Ocean, Surface, or Air)
+     * @param calendar Date/time of ship/receive
+     * @return DTR date code in format YDDD, DDD, or HDD (depending on conveyance)
+     */
+    public String getCode(String conveyance, Calendar calendar) {
+        String code;
 
         // Convert string parameter into ConveyanceType object
         ConveyanceType conveyanceType = getConveyanceType(conveyance);
 
-        // The Julian date code is used for Ocean conveyance types
-        String code = getJulianDateCode();
-
-        if (conveyanceType.equals(ConveyanceType.Air)) {
-            // Truncate to 2 digits
-            if (code.length() > 2) {
-                code = code.substring(code.length() - 2);
-            }
-
-            // Prepend hour code to Julian code
-            code = hourCodes[calendar.get(Calendar.HOUR_OF_DAY)] + code;
+        // Generate code for conveyance types
+        if (conveyanceType.equals(ConveyanceType.Ocean)) {
+            code = generateOceanConveyanceCode(calendar);
         } else if (conveyanceType.equals(ConveyanceType.Surface)) {
-            // Truncate to 3 digits
-            if (code.length() > 3) {
-                code = code.substring(code.length() - 3);
-            }
+            code = generateSurfaceConveyanceCode(calendar);
+        } else {
+            code = generateAirConveyanceCode(calendar);
         }
 
         return code;
     }
 
     /**
-     * Returns a Julian date code
+     * Generates a DTR date code for air conveyance
      *
-     * The Julian date is a 4-digit string with the format consisting of the last digit of the
-     * current year followed by a 3 digit day of the year.
+     * The air conveyance date code is a 1-digit hour code (consisting of an alphabetic character)
+     * and the last 2-digits of the Julian date.
+     *
+     * @return Date code in the format HDD
+     */
+    private String generateAirConveyanceCode(Calendar calendar) {
+        String code = generateJulianDateCode(calendar);
+
+        // Left-trim Julian date (only the last 2 digits are needed)
+        if (code.length() > 2) {
+            code = code.substring(code.length() - 2);
+        }
+
+        // Extract hour component (this is our index into the hour code array)
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+
+        // Concatenate hour code to Julian code
+        code = hourCodes[hour] + code;
+        return code;
+    }
+
+    /**
+     * Generates a DTR date code for surface conveyance
+     *
+     * The surface conveyance date code is the 3-digit Julian date.
+     *
+     * @return Date code in the format DDD
+     */
+    private String generateSurfaceConveyanceCode(Calendar calendar) {
+        return generateJulianDateCode(calendar);
+    }
+
+    /**
+     * Generates a DTR date code for ocean conveyance
+     *
+     * The ocean conveyance date code is a 4-digit string with the format consisting of the
+     * 3-digit Julian date prepended by the last digit of the current year.
      *
      * @return Date code in the format YDDD
      */
-    private String getJulianDateCode() {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        int day = calendar.get(Calendar.DAY_OF_YEAR);
-        int year = calendar.get(Calendar.YEAR);
+    private String generateOceanConveyanceCode(Calendar calendar) {
+        String code = generateJulianDateCode(calendar);
 
-        // Get year and day-of-year into string variables
-        String yearCode = String.format("%04d", year);
-        String dayCode = String.format("%03d", day);
+        int year = calendar.get(Calendar.YEAR);
+        String yearCode = String.format(Locale.getDefault(), "%04d", year);
 
         // Return concatenation of last digit of year and 3-digit day-of-year code
-        return yearCode.substring(yearCode.length() - 1) + dayCode;
+        return yearCode.substring(yearCode.length() - 1) + code;
     }
 
-//    public List<Date> getDatesDayCode(String dayCode) {
-//        String code;
-//        List values = new ArrayList<Date>();
-//        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-//
-//        if (conveyanceType.equals(ConveyanceType.Air)) {
-//            // Two-digit day code
-//            if (dayCode.length() > 2) {
-//                dayCode = dayCode.substring(dayCode.length() - 2);
-//            }
-//
-//            for (int dayOfYear = 1; dayOfYear <= 366; dayOfYear++) {
-//                code = getJulianDateCode(dayOfYear);
-//
-//                if (code.equals(dayCode)) {
-//                    calendar.set(Calendar.DAY_OF_YEAR, dayOfYear);
-//                    values.add(calendar.getTime());
-//                }
-//            }
-//        } else {
-//            // Three-digit day code
-//            if (dayCode.length() > 3) {
-//                dayCode = dayCode.substring(dayCode.length() - 3);
-//                calendar.set(Calendar.DAY_OF_YEAR, Integer.valueOf(dayCode));
-//                values.add(calendar.getTime());
-//            }
-//        }
-//
-//        return values;
-//    }
+    /**
+     * Returns a Julian date code
+     *
+     * The Julian date is a 3-digit string consisting of the 3 digit day of the year.
+     *
+     * @return Date code in the format DDD
+     */
+    private String generateJulianDateCode(Calendar calendar) {
+        int day = calendar.get(Calendar.DAY_OF_YEAR);
+
+        // Pad the date with leading zeros
+        return String.format(Locale.getDefault(), "%03d", day);
+    }
 }
