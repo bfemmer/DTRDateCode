@@ -75,7 +75,7 @@ public class DateCode {
     }
 
     /**
-     * Generates date code.
+     * Generates a DTR date code.
      *
      * Generates a DTR date code for the conveyance type defined in the parameter.
      *
@@ -88,7 +88,7 @@ public class DateCode {
     }
 
     /**
-     * Generates a DTR code
+     * Generates a DTR date code
      *
      * @param conveyance Type of conveyance (Ocean, Surface, or Air)
      * @param calendar Date/time of ship/receive
@@ -166,7 +166,7 @@ public class DateCode {
     }
 
     /**
-     * Returns a Julian date code
+     * Generates a Julian date code
      *
      * The Julian date is a 3-digit string consisting of the 3 digit day of the year.
      *
@@ -179,19 +179,31 @@ public class DateCode {
         return String.format(Locale.getDefault(), "%03d", day);
     }
 
-    private boolean validateDateCode(String dateCode) {
-        if (dateCode.length() < 3) throw new IllegalArgumentException("string length of argument insufficient");
-        if (dateCode.length() > 4) throw new IllegalArgumentException("string length of argument excessive");
-        return true;
+    /**
+     * Verifies length of paramter
+     *
+     * DTR codes are either 3 characters or 4 characters in length. If the length falls
+     * outside of this range, than an IllegalArgumentException is thrown.
+     *
+     * @param dateCode String to evaluate for length
+     */
+    private void validateDateCodeLength(String dateCode) {
+        if (dateCode.length() < 3)
+            throw new IllegalArgumentException("string length of argument insufficient");
+        if (dateCode.length() > 4)
+            throw new IllegalArgumentException("string length of argument excessive");
     }
 
     /**
+     * Generates a list of date codes corresponding to the provided date code
      *
      * @param dateCode user-entered value to lookup
      * @return List of dates matching date code
      */
     public List<Date>getCalendarDatesForDateCode (String dateCode){
-        List values = new ArrayList<Date>(); // List of dates that will get returned
+        List values = new ArrayList<>(); // List of dates that will get returned
+
+        validateDateCodeLength(dateCode);
 
         if (dateCode.length() == 4) values = getCalendarDatesForOceanDateCode(dateCode);
         if (dateCode.length() == 3) {
@@ -204,29 +216,40 @@ public class DateCode {
         return values;
     }
 
-    public List<Date> getCalendarDatesForOceanDateCode(String dateCode) {
-        List values = new ArrayList<Date>(); // List of dates that will get returned
-
-        // Evaluate leading character
-        String year = dateCode.substring(0, 1);
-
-        // Strip off leading character
-        String code = dateCode.substring(dateCode.length() - 3);
-
+    private List<Date> getCalendarDatesForOceanDateCode(String dateCode) {
+        List values = new ArrayList<>(); // List of dates that will get returned
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        calendar.set(Calendar.DAY_OF_YEAR, Integer.valueOf(code));
 
-        // Incorporate year
-        //String.valueOf(calendar.get(Calendar.YEAR));
+        // If not a number, will throw a NumberFormatException
+        Integer.parseInt(dateCode);
 
+        // Get last digit of current year
+        String temp = String.valueOf(calendar.get(Calendar.YEAR));
+        temp = temp.substring(temp.length() - 1);
+        int lastDigitOfCurrentYear = Integer.parseInt(temp);
+
+        // Get last digit of date code
+        int lastDigitOfYearInDateCode = Integer.parseInt(dateCode.substring(0, 1));
+
+        // Calculate year offset
+        int yearOffset = (lastDigitOfCurrentYear - lastDigitOfYearInDateCode) * -1;
+
+        // Strip off leading character and set calendar to day of year
+        String dayOfYear = dateCode.substring(dateCode.length() - 3);
+        calendar.set(Calendar.DAY_OF_YEAR, Integer.valueOf(dayOfYear));
+
+        // Apply offset to year
+        calendar.add(Calendar.YEAR, yearOffset);
+
+        // Add date to list and return
         values.add(calendar.getTime());
-
         return values;
     }
 
-    public List<Date> getCalendarDatesForSurfaceDateCode(String dateCode) {
-        List values = new ArrayList<Date>(); // List of dates that will get returned
+    private List<Date> getCalendarDatesForSurfaceDateCode(String dateCode) {
+        List values = new ArrayList<>(); // List of dates that will get returned
 
+        // If not a number, will throw a NumberFormatException
         Integer.parseInt(dateCode);
 
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
@@ -236,7 +259,7 @@ public class DateCode {
         return values;
     }
 
-    public List<Date> getCalendarDatesForAirDateCode(String dateCode) {
+    private List<Date> getCalendarDatesForAirDateCode(String dateCode) {
         String code;                         // Stores the "day" component of parameter
         String tempCode;                     // Temporary date code variable
         List values = new ArrayList<>(); // List of dates that will get returned
@@ -244,6 +267,9 @@ public class DateCode {
 
         // Left trim dateCode parameter to just the last two characters
         code = dateCode.substring(dateCode.length() - 2);
+
+        // If not a number, will throw a NumberFormatException
+        Integer.parseInt(code);
 
         // Store current date
         Date currentDate = calendar.getTime();

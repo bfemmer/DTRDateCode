@@ -43,13 +43,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity
         implements DateCodeInputDialogFragment.DateCodeInputDialogListener {
     private Button dateCodeButton;
     private TextView dateCodeTextView;
     private SharedPreferences sharedPreferences;
-    private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+    private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss", Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,6 +152,8 @@ public class MainActivity extends AppCompatActivity
             intent.putExtras(bundle);
             startActivity(intent);
         } catch (NumberFormatException numberFormatException) {
+            showExceptionMessage(dateCode);
+        } catch (IllegalArgumentException illegalArgumentException) {
             showExceptionMessage(dateCode);
         }
     }
