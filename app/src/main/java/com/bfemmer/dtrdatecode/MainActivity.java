@@ -23,11 +23,13 @@ SOFTWARE.
  */
 package com.bfemmer.dtrdatecode;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +38,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,8 +48,8 @@ public class MainActivity extends AppCompatActivity
         implements DateCodeInputDialogFragment.DateCodeInputDialogListener {
     private Button dateCodeButton;
     private TextView dateCodeTextView;
-
     private SharedPreferences sharedPreferences;
+    private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,22 +108,57 @@ public class MainActivity extends AppCompatActivity
         dialog.show(getSupportFragmentManager(), "DateCodeInputDialogFragment");
     }
 
+    private void showExceptionMessage(String dateCode) {
+        String message;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        message = "The entered value (" + dateCode + ") is not valid. ";
+        message += "Check the format of the date code and try again.";
+
+        // Build dialog
+        builder.setTitle(R.string.title_invalid_input);
+        builder.setMessage(message)
+                .setPositiveButton(R.string.label_ok_button, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // No code
+                    }
+                });
+
+        // Show AlertDialog
+        builder.create().show();
+    }
+
+    private void launchDateResultsActivityWithCode(String dateCode) {
+        List<Date> dates;
+
+        try {
+            // Get list of dates corresponding with date code
+            dates = DateCode.getInstance().getCalendarDatesForDateCode(dateCode);
+
+            // Convert date list to string list
+            List<String> values = new ArrayList<>();
+            for (Date date : dates) {
+                values.add(dateFormat.format(date));
+            }
+
+            // Prepare bundle to pass to intent
+            Bundle bundle = new Bundle();
+            bundle.putStringArrayList("DateList", (ArrayList)values);
+            bundle.putString("DateCode", dateCode);
+
+            // Prepare intent and start
+            Intent intent = new Intent(this, DateResultsActivity.class);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        } catch (NumberFormatException numberFormatException) {
+            showExceptionMessage(dateCode);
+        }
+    }
+
     @Override
     public void onPositiveClick(DialogFragment dialog) {
         String dateCode = ((DateCodeInputDialogFragment) dialog).getDateCode();
-        List<Date> dates = DateCode.getInstance().getCalendarDatesForDateCode(dateCode);
-
-        // Convert date list to string list
-        List<String> values = new ArrayList<>();
-        for (Date date : dates) {
-            values.add(date.toString());
-        }
-
-        Bundle bundle = new Bundle();
-        bundle.putStringArrayList("DateList", (ArrayList)values);
-        Intent intent = new Intent(this, DateResultsActivity.class);
-        intent.putExtras(bundle);
-        startActivity(intent);
+        launchDateResultsActivityWithCode(dateCode);
     }
 
     @Override

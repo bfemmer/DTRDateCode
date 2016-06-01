@@ -29,6 +29,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.view.WindowManager;
 import android.widget.EditText;
 
 /**
@@ -70,8 +71,11 @@ public class DateCodeInputDialogFragment extends DialogFragment {
                         dateCodeInputDialogListener.onNegativeClick(DateCodeInputDialogFragment.this);
                     }
                 });
-        // Create the AlertDialog object and return it
-        return builder.create();
+
+        // Create the AlertDialog object, set focus on the edittext, and return it
+        Dialog dialog = builder.create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        return dialog;
     }
 
     @Override

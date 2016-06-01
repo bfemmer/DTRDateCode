@@ -185,6 +185,11 @@ public class DateCode {
         return true;
     }
 
+    /**
+     *
+     * @param dateCode user-entered value to lookup
+     * @return List of dates matching date code
+     */
     public List<Date>getCalendarDatesForDateCode (String dateCode){
         List values = new ArrayList<Date>(); // List of dates that will get returned
 
@@ -221,6 +226,8 @@ public class DateCode {
 
     public List<Date> getCalendarDatesForSurfaceDateCode(String dateCode) {
         List values = new ArrayList<Date>(); // List of dates that will get returned
+
+        Integer.parseInt(dateCode);
 
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         calendar.set(Calendar.DAY_OF_YEAR, Integer.valueOf(dateCode));
