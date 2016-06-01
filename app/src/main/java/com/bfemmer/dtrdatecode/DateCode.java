@@ -190,7 +190,7 @@ public class DateCode {
 
         if (dateCode.length() == 4) values = getCalendarDatesForOceanDateCode(dateCode);
         if (dateCode.length() == 3) {
-            if (Arrays.asList(hourCodes).contains(dateCode.substring(0, 1))) {
+            if (Arrays.asList(hourCodes).contains(dateCode.substring(0, 1).toUpperCase())) {
                 values = getCalendarDatesForAirDateCode(dateCode);
             }
             else values = getCalendarDatesForSurfaceDateCode(dateCode);
@@ -201,18 +201,38 @@ public class DateCode {
 
     public List<Date> getCalendarDatesForOceanDateCode(String dateCode) {
         List values = new ArrayList<Date>(); // List of dates that will get returned
+
+        // Evaluate leading character
+        String year = dateCode.substring(0, 1);
+
+        // Strip off leading character
+        String code = dateCode.substring(dateCode.length() - 3);
+
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        calendar.set(Calendar.DAY_OF_YEAR, Integer.valueOf(code));
+
+        // Incorporate year
+        //String.valueOf(calendar.get(Calendar.YEAR));
+
+        values.add(calendar.getTime());
+
         return values;
     }
 
     public List<Date> getCalendarDatesForSurfaceDateCode(String dateCode) {
         List values = new ArrayList<Date>(); // List of dates that will get returned
+
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        calendar.set(Calendar.DAY_OF_YEAR, Integer.valueOf(dateCode));
+        values.add(calendar.getTime());
+
         return values;
     }
 
     public List<Date> getCalendarDatesForAirDateCode(String dateCode) {
-        String code;      // Stores the "day" component of parameter
-        String tempCode;  // Temporary date code variable
-        List values = new ArrayList<Date>(); // List of dates that will get returned
+        String code;                         // Stores the "day" component of parameter
+        String tempCode;                     // Temporary date code variable
+        List values = new ArrayList<>(); // List of dates that will get returned
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 
         // Left trim dateCode parameter to just the last two characters
@@ -224,7 +244,8 @@ public class DateCode {
         // Reset calendar to minus 1 year
         calendar.add(Calendar.YEAR, -1);
 
-        while (calendar.getTime().before(currentDate)) {
+        // using "not ... after" allows for the current date to be included in the result set
+        while (!calendar.getTime().after(currentDate)) {
             tempCode = generateJulianDateCode(calendar);
 
             // Left trim dateCode parameter to just the last two characters

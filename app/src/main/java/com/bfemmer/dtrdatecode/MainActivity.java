@@ -35,8 +35,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity
         implements DateCodeInputDialogFragment.DateCodeInputDialogListener {
     private Button dateCodeButton;
     private TextView dateCodeTextView;
+
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -107,7 +108,18 @@ public class MainActivity extends AppCompatActivity
     public void onPositiveClick(DialogFragment dialog) {
         String dateCode = ((DateCodeInputDialogFragment) dialog).getDateCode();
         List<Date> dates = DateCode.getInstance().getCalendarDatesForDateCode(dateCode);
-        Toast.makeText(this, dateCode, Toast.LENGTH_LONG).show();
+
+        // Convert date list to string list
+        List<String> values = new ArrayList<>();
+        for (Date date : dates) {
+            values.add(date.toString());
+        }
+
+        Bundle bundle = new Bundle();
+        bundle.putStringArrayList("DateList", (ArrayList)values);
+        Intent intent = new Intent(this, DateResultsActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     @Override
