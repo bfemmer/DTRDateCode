@@ -23,7 +23,11 @@ SOFTWARE.
  */
 package com.bfemmer.dtrdatecode;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -173,5 +177,65 @@ public class DateCode {
 
         // Pad the date with leading zeros
         return String.format(Locale.getDefault(), "%03d", day);
+    }
+
+    private boolean validateDateCode(String dateCode) {
+        if (dateCode.length() < 3) throw new IllegalArgumentException("string length of argument insufficient");
+        if (dateCode.length() > 4) throw new IllegalArgumentException("string length of argument excessive");
+        return true;
+    }
+
+    public List<Date>getCalendarDatesForDateCode (String dateCode){
+        List values = new ArrayList<Date>(); // List of dates that will get returned
+
+        if (dateCode.length() == 4) values = getCalendarDatesForOceanDateCode(dateCode);
+        if (dateCode.length() == 3) {
+            if (Arrays.asList(hourCodes).contains(dateCode.substring(0, 1))) {
+                values = getCalendarDatesForAirDateCode(dateCode);
+            }
+            else values = getCalendarDatesForSurfaceDateCode(dateCode);
+        }
+
+        return values;
+    }
+
+    public List<Date> getCalendarDatesForOceanDateCode(String dateCode) {
+        List values = new ArrayList<Date>(); // List of dates that will get returned
+        return values;
+    }
+
+    public List<Date> getCalendarDatesForSurfaceDateCode(String dateCode) {
+        List values = new ArrayList<Date>(); // List of dates that will get returned
+        return values;
+    }
+
+    public List<Date> getCalendarDatesForAirDateCode(String dateCode) {
+        String code;      // Stores the "day" component of parameter
+        String tempCode;  // Temporary date code variable
+        List values = new ArrayList<Date>(); // List of dates that will get returned
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+
+        // Left trim dateCode parameter to just the last two characters
+        code = dateCode.substring(dateCode.length() - 2);
+
+        // Store current date
+        Date currentDate = calendar.getTime();
+
+        // Reset calendar to minus 1 year
+        calendar.add(Calendar.YEAR, -1);
+
+        while (calendar.getTime().before(currentDate)) {
+            tempCode = generateJulianDateCode(calendar);
+
+            // Left trim dateCode parameter to just the last two characters
+            tempCode = tempCode.substring(tempCode.length() - 2);
+
+            if (tempCode.equals(code)) {
+                values.add(calendar.getTime());
+            }
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+        }
+
+        return values;
     }
 }
