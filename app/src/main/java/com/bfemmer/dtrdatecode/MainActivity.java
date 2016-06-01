@@ -37,6 +37,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Date;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
         implements DateCodeInputDialogFragment.DateCodeInputDialogListener {
     private Button dateCodeButton;
@@ -103,6 +106,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPositiveClick(DialogFragment dialog) {
         String dateCode = ((DateCodeInputDialogFragment) dialog).getDateCode();
+        List<Date> dates = DateCode.getInstance().getCalendarDatesForDateCode(dateCode);
         Toast.makeText(this, dateCode, Toast.LENGTH_LONG).show();
     }
 
