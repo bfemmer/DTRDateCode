@@ -27,13 +27,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements DateCodeInputDialogFragment.DateCodeInputDialogListener {
+    private Button dateCodeButton;
     private TextView dateCodeTextView;
     private SharedPreferences sharedPreferences;
 
@@ -45,6 +51,14 @@ public class MainActivity extends AppCompatActivity {
         // Initialize class variables
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         dateCodeTextView = (TextView) findViewById(R.id.datecode_value);
+        dateCodeButton = (Button) findViewById(R.id.datecode_button);
+
+        dateCodeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDateCodeInputDialogFragment();
+            }
+        });
     }
 
     @Override
@@ -78,5 +92,22 @@ public class MainActivity extends AppCompatActivity {
     private void updateCodeDisplay() {
         String manifestType = sharedPreferences.getString("conveyance_list", ConveyanceType.Air.toString());
         dateCodeTextView.setText(DateCode.getInstance().getCode(manifestType));
+    }
+
+    public void showDateCodeInputDialogFragment() {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new DateCodeInputDialogFragment();
+        dialog.show(getSupportFragmentManager(), "DateCodeInputDialogFragment");
+    }
+
+    @Override
+    public void onPositiveClick(DialogFragment dialog) {
+        String dateCode = ((DateCodeInputDialogFragment) dialog).getDateCode();
+        Toast.makeText(this, dateCode, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onNegativeClick(DialogFragment dialog) {
+
     }
 }
