@@ -61,6 +61,26 @@ public class DateCode {
     }
 
     /**
+     * Gets the numerical hour corresponding to the date code
+     *
+     * The numerical hour corresponds to the index of the array element containing
+     * the hour code in the parameter. The method just iterates through the array
+     * and returns the index when a hit is found.
+     *
+     * @param hourCode
+     * @return array index containing the specified code
+     */
+    private int getArrayIndexContainingHourCode(String hourCode) {
+        for (int i = 0; i < hourCodes.length; i++) {
+            if (hourCode.toUpperCase().equals(hourCodes[i])) {
+                return i;
+            }
+        }
+
+        return 0;
+    }
+
+    /**
      * Generates ConveyanceType object for string parameters
      *
      * @param conveyance String value of conveyance (Air, Surface, or Ocean)
@@ -83,8 +103,25 @@ public class DateCode {
      * @return Date code formatted for the given conveyance type
      */
     public String getCode(String conveyance) {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        return getCode(conveyance, calendar);
+        String code;
+        Calendar calendar;
+
+        // Convert string parameter into ConveyanceType object
+        ConveyanceType conveyanceType = getConveyanceType(conveyance);
+
+        calendar = Calendar.getInstance(TimeZone.getDefault());
+
+        // Generate code for conveyance types
+        if (conveyanceType.equals(ConveyanceType.Ocean)) {
+            code = generateOceanConveyanceCode(calendar);
+        } else if (conveyanceType.equals(ConveyanceType.Surface)) {
+            code = generateSurfaceConveyanceCode(calendar);
+        } else {
+            calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+            code = generateAirConveyanceCode(calendar);
+        }
+
+        return code;
     }
 
     /**
@@ -234,12 +271,12 @@ public class DateCode {
         // Calculate year offset
         int yearOffset = (lastDigitOfCurrentYear - lastDigitOfYearInDateCode) * -1;
 
+        // Apply offset to year (must be done prior to setting the day of year)
+        calendar.add(Calendar.YEAR, yearOffset);
+
         // Strip off leading character and set calendar to day of year
         String dayOfYear = dateCode.substring(dateCode.length() - 3);
         calendar.set(Calendar.DAY_OF_YEAR, Integer.valueOf(dayOfYear));
-
-        // Apply offset to year
-        calendar.add(Calendar.YEAR, yearOffset);
 
         // Add date to list and return
         values.add(calendar.getTime());
@@ -261,9 +298,14 @@ public class DateCode {
 
     private List<Date> getCalendarDatesForAirDateCode(String dateCode) {
         String code;                         // Stores the "day" component of parameter
+        int hour;                           // Stores the "hour" component of parameter
         String tempCode;                     // Temporary date code variable
         List values = new ArrayList<>(); // List of dates that will get returned
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+
+        // Extract hour component (this is our index into the hour code array)
+        tempCode = dateCode.substring(0, 1);
+        hour = getArrayIndexContainingHourCode(tempCode);
 
         // Left trim dateCode parameter to just the last two characters
         code = dateCode.substring(dateCode.length() - 2);
@@ -276,6 +318,11 @@ public class DateCode {
 
         // Reset calendar to minus 1 year
         calendar.add(Calendar.YEAR, -1);
+
+        // Reset minutes and seconds (for display purposes)
+        calendar.set(Calendar.HOUR, hour);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
 
         // using "not ... after" allows for the current date to be included in the result set
         while (!calendar.getTime().after(currentDate)) {
