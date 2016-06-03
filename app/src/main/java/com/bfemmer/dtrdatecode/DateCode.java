@@ -109,7 +109,10 @@ public class DateCode {
         // Convert string parameter into ConveyanceType object
         ConveyanceType conveyanceType = getConveyanceType(conveyance);
 
-        calendar = Calendar.getInstance(TimeZone.getDefault());
+        // Setup the calendar using the default locale (will apply to Surface and Ocean
+        // conveyances). If conveyance is Air, then the calendar will be set to use
+        // the GMT timezone.
+        calendar = Calendar.getInstance(Locale.getDefault());
 
         // Generate code for conveyance types
         if (conveyanceType.equals(ConveyanceType.Ocean)) {
@@ -117,6 +120,7 @@ public class DateCode {
         } else if (conveyanceType.equals(ConveyanceType.Surface)) {
             code = generateSurfaceConveyanceCode(calendar);
         } else {
+            // Use the GMT timezone versus the default locale
             calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
             code = generateAirConveyanceCode(calendar);
         }
@@ -255,7 +259,11 @@ public class DateCode {
 
     private List<Date> getCalendarDatesForOceanDateCode(String dateCode) {
         List values = new ArrayList<>(); // List of dates that will get returned
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+
+        // Use Locale.getDefault() versus TimeZone.getTimeZone("GMT") for the calendar instance
+        // as we only care about the date. See the getCalendarDatesForAirDateCode method
+        // to see why the GMT timezone is used there.
+        Calendar calendar = Calendar.getInstance(Locale.getDefault());
 
         // If not a number, will throw a NumberFormatException
         Integer.parseInt(dateCode);
@@ -278,6 +286,11 @@ public class DateCode {
         String dayOfYear = dateCode.substring(dateCode.length() - 3);
         calendar.set(Calendar.DAY_OF_YEAR, Integer.valueOf(dayOfYear));
 
+        // Reset hours, minutes, and seconds
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
         // Add date to list and return
         values.add(calendar.getTime());
         return values;
@@ -289,18 +302,31 @@ public class DateCode {
         // If not a number, will throw a NumberFormatException
         Integer.parseInt(dateCode);
 
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        // Use Locale.getDefault() versus TimeZone.getTimeZone("GMT") for the calendar instance
+        // as we only care about the date. See the getCalendarDatesForAirDateCode method
+        // to see why the GMT timezone is used there.
+        Calendar calendar = Calendar.getInstance(Locale.getDefault());
         calendar.set(Calendar.DAY_OF_YEAR, Integer.valueOf(dateCode));
+
+        // Reset hours, minutes, and seconds
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
         values.add(calendar.getTime());
 
         return values;
     }
 
     private List<Date> getCalendarDatesForAirDateCode(String dateCode) {
-        String code;                         // Stores the "day" component of parameter
-        int hour;                           // Stores the "hour" component of parameter
-        String tempCode;                     // Temporary date code variable
+        String code;                     // Stores the "day" component of parameter
+        int hour;                        // Stores the "hour" component of parameter
+        String tempCode;                 // Temporary date code variable
         List values = new ArrayList<>(); // List of dates that will get returned
+
+        // Use TimeZone.getTimeZone("GMT") versus Locale.getDefault() for the calendar instance
+        // as we care about the date AND the time. The hour code is based on GMT time, and this
+        // must be incorporated when calculating dates.
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 
         // Extract hour component (this is our index into the hour code array)
@@ -319,7 +345,7 @@ public class DateCode {
         // Reset calendar to minus 1 year
         calendar.add(Calendar.YEAR, -1);
 
-        // Reset minutes and seconds (for display purposes)
+        // Set the hour and reset minutes and seconds (which is done for display purposes)
         calendar.set(Calendar.HOUR, hour);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
@@ -331,6 +357,7 @@ public class DateCode {
             // Left trim dateCode parameter to just the last two characters
             tempCode = tempCode.substring(tempCode.length() - 2);
 
+            // Add to list if there's a match
             if (tempCode.equals(code)) {
                 values.add(calendar.getTime());
             }
