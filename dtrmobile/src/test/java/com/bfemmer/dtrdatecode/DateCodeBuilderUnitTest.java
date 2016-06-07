@@ -23,8 +23,8 @@ SOFTWARE.
  */
 package com.bfemmer.dtrdatecode;
 
-import com.bfemmer.dtrdatecode.model.DateCodeBuilder;
-import com.bfemmer.dtrdatecode.model.DateCodeBuilderFactory;
+import com.bfemmer.dtrdatecodelib.DateCodeBuilder;
+import com.bfemmer.dtrdatecodelib.DateCodeBuilderFactory;
 
 import org.junit.Test;
 
