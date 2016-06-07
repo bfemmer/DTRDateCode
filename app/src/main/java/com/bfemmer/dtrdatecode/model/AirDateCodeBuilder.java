@@ -33,36 +33,25 @@ import java.util.TimeZone;
 /**
  * Created by bfemmer on 6/7/2016.
  */
-public class AirDateCode implements DateCode {
+public class AirDateCodeBuilder implements DateCodeBuilder {
     private final String[] hourCodes = {"A", "B", "C", "D",
             "E", "F", "G", "H", "J", "K", "L", "M", "N", "P",
             "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
     @Override
     public String getCode() {
-        Calendar calendar;
-
         // Setup the calendar using the GMT timezone.
-        calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        return getCode(calendar);
+        return getCode(Calendar.getInstance(TimeZone.getTimeZone("GMT")));
     }
 
     @Override
     public String getCode(Calendar calendar) {
-        String code;
-
-        // Setup the calendar using the default locale (will apply to Surface and Ocean
-        // conveyances). If conveyance is Air, then the calendar will be set to use
-        // the GMT timezone.
-        calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        code = generateAirConveyanceCode(calendar);
-
-        return code;
+        return generateAirConveyanceCode(calendar);
     }
 
     @Override
     public List<Date> getCalendarDatesForCode(String dateCode) {
-        return null;
+        return getCalendarDatesForDateCode(dateCode);
     }
 
     /**
@@ -123,7 +112,7 @@ public class AirDateCode implements DateCode {
         return 0;
     }
 
-    private List<Date> getCalendarDatesForAirDateCode(String dateCode) {
+    private List<Date> getCalendarDatesForDateCode(String dateCode) {
         String code;                     // Stores the "day" component of parameter
         int hour;                        // Stores the "hour" component of parameter
         String tempCode;                 // Temporary date code variable

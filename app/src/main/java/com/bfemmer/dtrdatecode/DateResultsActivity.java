@@ -54,7 +54,7 @@ public class DateResultsActivity extends AppCompatActivity {
         resultsListView = (ListView) findViewById(R.id.resultsListView);
 
         // Update title to display code being converted
-        String dateCode = getIntent().getStringExtra("DateCode");
+        String dateCode = getIntent().getStringExtra("DateCodeBuilder");
         setTitle("Date Results For " + dateCode);
 
         // Extract dates from bundle

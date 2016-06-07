@@ -23,26 +23,18 @@ SOFTWARE.
  */
 package com.bfemmer.dtrdatecode.model;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
 /**
  * Created by bfemmer on 6/7/2016.
  */
-public class SurfaceDateCode implements DateCode {
-    @Override
-    public String getCode() {
-        return null;
-    }
+public class DateCodeBuilderFactory {
+    public static DateCodeBuilder getDateCodeBuilder(String conveyanceType) {
+        if ( conveyanceType.equals("Air") )
+            return new AirDateCodeBuilder();
+        else if ( conveyanceType.equals("Ocean") )
+            return new OceanDateCodeBuilder();
+        else if ( conveyanceType.equals("Surface") )
+            return new SurfaceDateCodeBuilder();
 
-    @Override
-    public String getCode(Calendar calendar) {
-        return null;
-    }
-
-    @Override
-    public List<Date> getCalendarDatesForCode(String dateCode) {
         return null;
     }
 }

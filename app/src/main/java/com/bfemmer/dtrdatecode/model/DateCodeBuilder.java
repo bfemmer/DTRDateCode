@@ -31,7 +31,7 @@ import java.util.Locale;
 /**
  * Created by bfemmer on 6/7/2016.
  */
-public interface DateCode {
+public interface DateCodeBuilder {
     String getCode();
     String getCode(Calendar calendar);
     List<Date> getCalendarDatesForCode (String dateCode);

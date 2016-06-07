@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity
             // Prepare bundle to pass to intent
             Bundle bundle = new Bundle();
             bundle.putStringArrayList("DateList", (ArrayList)values);
-            bundle.putString("DateCode", dateCode);
+            bundle.putString("DateCodeBuilder", dateCode);
 
             // Prepare intent and start
             Intent intent = new Intent(this, DateResultsActivity.class);

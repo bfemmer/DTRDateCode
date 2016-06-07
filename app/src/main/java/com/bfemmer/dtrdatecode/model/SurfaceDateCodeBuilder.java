@@ -23,18 +23,41 @@ SOFTWARE.
  */
 package com.bfemmer.dtrdatecode.model;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 /**
  * Created by bfemmer on 6/7/2016.
  */
-public class DateCodeFactory {
-    public static DateCode getDateCode(String conveyance) {
-        if ( conveyance.equals("Air") )
-            return new AirDateCode();
-        else if ( conveyance.equals("Ocean") )
-            return new OceanDateCode();
-        else if ( conveyance.equals("Surface") )
-            return new SurfaceDateCode();
+public class SurfaceDateCodeBuilder implements DateCodeBuilder {
+    @Override
+    public String getCode() {
+        return getCode(Calendar.getInstance(Locale.getDefault()));
+    }
 
+    @Override
+    public String getCode(Calendar calendar) {
+        return generateJulianDateCode(calendar);
+    }
+
+    @Override
+    public List<Date> getCalendarDatesForCode(String dateCode) {
         return null;
+    }
+
+    /**
+     * Generates a Julian date code
+     *
+     * The Julian date is a 3-digit string consisting of the 3 digit day of the year.
+     *
+     * @return Date code in the format DDD
+     */
+    private String generateJulianDateCode(Calendar calendar) {
+        int day = calendar.get(Calendar.DAY_OF_YEAR);
+
+        // Pad the date with leading zeros
+        return String.format(Locale.getDefault(), "%03d", day);
     }
 }
