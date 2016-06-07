@@ -35,4 +35,5 @@ public interface DateCodeBuilder {
     String getCode();
     String getCode(Calendar calendar);
     List<Date> getCalendarDatesForCode (String dateCode);
+    boolean isValidFormat(String dateCode);
 }

@@ -23,6 +23,7 @@ SOFTWARE.
  */
 package com.bfemmer.dtrdatecode.model;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -44,7 +45,12 @@ public class SurfaceDateCodeBuilder implements DateCodeBuilder {
 
     @Override
     public List<Date> getCalendarDatesForCode(String dateCode) {
-        return null;
+        return getCalendarDatesForDateCode(dateCode);
+    }
+
+    @Override
+    public boolean isValidFormat(String dateCode) {
+        return false;
     }
 
     /**
@@ -59,5 +65,30 @@ public class SurfaceDateCodeBuilder implements DateCodeBuilder {
 
         // Pad the date with leading zeros
         return String.format(Locale.getDefault(), "%03d", day);
+    }
+
+    private List<Date> getCalendarDatesForDateCode(String dateCode) {
+        List values = new ArrayList<>(); // List of dates that will get returned
+
+        // Validate length
+        if (dateCode.length() != 3) throw new IllegalArgumentException("insufficient length in date code");
+
+        // If not a number, will throw a NumberFormatException
+        Integer.parseInt(dateCode);
+
+        // Use Locale.getDefault() versus TimeZone.getTimeZone("GMT") for the calendar instance
+        // as we only care about the date. See the getCalendarDatesForAirDateCode method
+        // to see why the GMT timezone is used there.
+        Calendar calendar = Calendar.getInstance(Locale.getDefault());
+        calendar.set(Calendar.DAY_OF_YEAR, Integer.valueOf(dateCode));
+
+        // Reset hours, minutes, and seconds
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
+        values.add(calendar.getTime());
+
+        return values;
     }
 }

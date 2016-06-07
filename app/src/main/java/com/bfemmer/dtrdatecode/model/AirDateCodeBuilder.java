@@ -24,6 +24,7 @@ SOFTWARE.
 package com.bfemmer.dtrdatecode.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -52,6 +53,31 @@ public class AirDateCodeBuilder implements DateCodeBuilder {
     @Override
     public List<Date> getCalendarDatesForCode(String dateCode) {
         return getCalendarDatesForDateCode(dateCode);
+    }
+
+    @Override
+    public boolean isValidFormat(String dateCode) {
+        boolean isValid = true;
+
+        // Validate length
+        if (dateCode.length() != 3) isValid = false;
+
+        // Validate first character as hour code
+        if (Arrays.asList(hourCodes).contains(dateCode.substring(0, 1).toUpperCase()))
+            isValid = false;
+
+        // Validate last two characters as numeric
+        // Left trim dateCode parameter to just the last two characters
+        String code = dateCode.substring(dateCode.length() - 2);
+
+        // If not a number, will throw a NumberFormatException
+        try {
+            Integer.parseInt(code);
+        } catch (NumberFormatException numberFormatException) {
+            isValid = false;
+        }
+
+        return isValid;
     }
 
     /**

@@ -23,26 +23,30 @@ SOFTWARE.
  */
 package com.bfemmer.dtrdatecode;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
 import android.widget.ListView;
 
+import com.bfemmer.dtrdatecode.model.DateCodeBuilderFactory;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class DateResultsActivity extends AppCompatActivity {
+    private String conveyanceType;
     private ListView resultsListView;
     private CalendarView calendarView;
     private ArrayAdapter<String> arrayAdapter;
-    private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss", Locale.getDefault());
+    private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss", Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,13 +58,16 @@ public class DateResultsActivity extends AppCompatActivity {
         resultsListView = (ListView) findViewById(R.id.resultsListView);
 
         // Update title to display code being converted
-        String dateCode = getIntent().getStringExtra("DateCodeBuilder");
+        String dateCode = getIntent().getStringExtra("DateCode");
         setTitle("Date Results For " + dateCode);
 
         // Extract dates from bundle
         ArrayList<String> dates = getIntent().getStringArrayListExtra("DateList");
 
-        // Assign dates to new array adapter and apply to listview
+        // Get list of dates corresponding with the date code from the bundle
+        conveyanceType = getIntent().getStringExtra("ConveyanceType");
+
+        // Assign date strings to new array adapter and apply to listview
         arrayAdapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_list_item_1,
@@ -68,7 +75,7 @@ public class DateResultsActivity extends AppCompatActivity {
 
         resultsListView.setAdapter(arrayAdapter);
 
-        // Update calendar with most recent date (last item in list)
+        // Update calendar view with most recent date (last item in list)
         if (dates.size() > 0) {
             try {
                 Date date = dateFormat.parse(dates.get(dates.size() - 1));

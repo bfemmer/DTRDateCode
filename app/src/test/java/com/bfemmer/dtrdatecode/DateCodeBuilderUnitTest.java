@@ -28,7 +28,12 @@ import com.bfemmer.dtrdatecode.model.DateCodeBuilderFactory;
 
 import org.junit.Test;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -38,6 +43,7 @@ import static org.junit.Assert.assertEquals;
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
  */
 public class DateCodeBuilderUnitTest {
+    private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss", Locale.getDefault());
 
     @Test
     public void testSurfaceConveyanceNormalYear() throws Exception {
@@ -54,8 +60,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for non leap year", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for non leap year",
+                expected, actual);
     }
 
     @Test
@@ -73,8 +79,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for leap year", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for leap year",
+                expected, actual);
     }
 
     @Test
@@ -92,8 +98,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for non leap year", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for non leap year",
+                expected, actual);
     }
 
     @Test
@@ -111,8 +117,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for leap year", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for leap year",
+                expected, actual);
     }
 
     @Test
@@ -130,8 +136,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for non leap year", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for non leap year",
+                expected, actual);
     }
 
     @Test
@@ -149,8 +155,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for leap year", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for leap year",
+                expected, actual);
     }
 
     @Test
@@ -168,8 +174,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 0100", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 0100",
+                expected, actual);
     }
 
     @Test
@@ -187,8 +193,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 0200", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 0200",
+                expected, actual);
     }
 
     @Test
@@ -206,8 +212,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 0300", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 0300",
+                expected, actual);
     }
 
     @Test
@@ -225,8 +231,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 0400", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 0400",
+                expected, actual);
     }
 
     @Test
@@ -244,8 +250,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 0500", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 0500",
+                expected, actual);
     }
 
     @Test
@@ -263,8 +269,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 0600", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 0600",
+                expected, actual);
     }
 
     @Test
@@ -282,8 +288,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 0700", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 0700",
+                expected, actual);
     }
 
     @Test
@@ -301,8 +307,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 0800", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 0800",
+                expected, actual);
     }
 
     @Test
@@ -320,8 +326,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 0900", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 0900",
+                expected, actual);
     }
 
     @Test
@@ -339,8 +345,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 1000", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 1000",
+                expected, actual);
     }
 
     @Test
@@ -358,8 +364,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 1100", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 1100",
+                expected, actual);
     }
 
     @Test
@@ -377,8 +383,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 1200", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 1200",
+                expected, actual);
     }
 
     @Test
@@ -396,8 +402,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 1300", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 1300",
+                expected, actual);
     }
 
     @Test
@@ -415,8 +421,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 1400", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 1400",
+                expected, actual);
     }
 
     @Test
@@ -434,8 +440,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 1500", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 1500",
+                expected, actual);
     }
 
     @Test
@@ -453,8 +459,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 1600", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 1600",
+                expected, actual);
     }
 
     @Test
@@ -472,8 +478,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 1700", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 1700",
+                expected, actual);
     }
 
     @Test
@@ -491,8 +497,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 1800", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 1800",
+                expected, actual);
     }
 
     @Test
@@ -510,8 +516,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 1900", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 1900",
+                expected, actual);
     }
 
     @Test
@@ -529,8 +535,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 2000", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 2000",
+                expected, actual);
     }
 
     @Test
@@ -548,8 +554,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 2100", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 2100",
+                expected, actual);
     }
 
     @Test
@@ -567,8 +573,8 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 2200", expected,
-                actual);
+        assertEquals("Surface conveyance date code generation failed for hour code at 2200",
+                expected, actual);
     }
 
     @Test
@@ -586,7 +592,94 @@ public class DateCodeBuilderUnitTest {
         String actual = dateCodeBuilder.getCode(calendar);
 
         // Evaluate
-        assertEquals("Surface conveyance date code generation failed for hour code at 2300", expected,
+        assertEquals("Surface conveyance date code generation failed for hour code at 2300",
+                expected, actual);
+    }
+
+    @Test
+    public void testOceanConveyanceCalendarCodeNormal() throws Exception {
+        DateCodeBuilder dateCodeBuilder = DateCodeBuilderFactory.getDateCodeBuilder("Ocean");
+        Calendar calendar = Calendar.getInstance(Locale.getDefault());
+
+        // Seed date to January 1, 2016 00:00 local time
+        calendar.clear();
+        calendar.set(2016, 0, 1, 0, 0);
+
+        // Establish expected results
+        String expected = dateFormat.format(calendar.getTime());
+
+        // Generate actual results
+        List<Date> dates = dateCodeBuilder.getCalendarDatesForCode("6001");
+        String actual = dateFormat.format(dates.get(0).getTime());
+
+        // Evaluate
+        assertEquals("Ocean conveyance calendar date code generation failed", expected,
                 actual);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void testOceanConveyanceCalendarCodeNumberFormat() throws Exception {
+        DateCodeBuilder dateCodeBuilder = DateCodeBuilderFactory.getDateCodeBuilder("Ocean");
+        // Expect method to throw exception
+        List<Date> dates = dateCodeBuilder.getCalendarDatesForCode("A001");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testOceanConveyanceCalendarCodeLengthTooShort() throws Exception {
+        DateCodeBuilder dateCodeBuilder = DateCodeBuilderFactory.getDateCodeBuilder("Ocean");
+        // Expect method to throw exception
+        List<Date> dates = dateCodeBuilder.getCalendarDatesForCode("1");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testOceanConveyanceCalendarCodeLengthTooLong() throws Exception {
+        DateCodeBuilder dateCodeBuilder = DateCodeBuilderFactory.getDateCodeBuilder("Ocean");
+        // Expect method to throw exception
+        List<Date> dates = dateCodeBuilder.getCalendarDatesForCode("10000");
+    }
+
+    @Test
+    public void testSurfaceConveyanceCalendarCodeNormal() throws Exception {
+        DateCodeBuilder dateCodeBuilder = DateCodeBuilderFactory.getDateCodeBuilder("Surface");
+        Calendar calendar = Calendar.getInstance(Locale.getDefault());
+
+        // Seed date to January 1, 2016 00:00 local time
+        calendar.clear();
+        calendar.set(2016, 0, 1, 0, 0);
+
+        // Establish expected results
+        String expected = dateFormat.format(calendar.getTime());
+
+        // Generate actual results
+        List<Date> dates = dateCodeBuilder.getCalendarDatesForCode("001");
+        String actual = dateFormat.format(dates.get(0).getTime());
+
+        // Evaluate
+        assertEquals("Surface conveyance calendar date code generation failed", expected,
+                actual);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void testSurfaceConveyanceCalendarCodeNumberFormat() throws Exception {
+        DateCodeBuilder dateCodeBuilder = DateCodeBuilderFactory.getDateCodeBuilder("Surface");
+
+        // Expect method to throw exception
+        List<Date> dates = dateCodeBuilder.getCalendarDatesForCode("A01");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSurfaceConveyanceCalendarCodeLengthTooShort() throws Exception {
+        DateCodeBuilder dateCodeBuilder = DateCodeBuilderFactory.getDateCodeBuilder("Surface");
+
+        // Expect method to throw exception
+        List<Date> dates = dateCodeBuilder.getCalendarDatesForCode("1");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSurfaceConveyanceCalendarCodeLengthTooLong() throws Exception {
+        DateCodeBuilder dateCodeBuilder = DateCodeBuilderFactory.getDateCodeBuilder("Surface");
+
+        // Expect method to throw exception
+        List<Date> dates = dateCodeBuilder.getCalendarDatesForCode("10000");
     }
 }

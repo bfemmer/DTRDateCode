@@ -38,6 +38,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.bfemmer.dtrdatecode.model.DateCodeBuilderFactory;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity
     private Button dateCodeButton;
     private TextView dateCodeTextView;
     private SharedPreferences sharedPreferences;
-    private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss", Locale.getDefault());
+    private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss", Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +102,7 @@ public class MainActivity extends AppCompatActivity
 
     private void updateCodeDisplay() {
         String manifestType = sharedPreferences.getString("conveyance_list", ConveyanceType.Air.toString());
-        dateCodeTextView.setText(DateCode.getInstance().getCode(manifestType));
+        dateCodeTextView.setText(DateCodeBuilderFactory.getDateCodeBuilder((manifestType)).getCode());
     }
 
     public void showDateCodeInputDialogFragment() {
@@ -129,10 +131,47 @@ public class MainActivity extends AppCompatActivity
         builder.create().show();
     }
 
+    /**
+     * Verifies length of paramter
+     *
+     * DTR codes are either 3 characters or 4 characters in length.
+     *
+     * @param dateCode String to evaluate for length
+     */
+    private void validateDateCodeLength(String dateCode) {
+        if (dateCode.length() < 3)
+            throw new IllegalArgumentException("length insufficient");
+        if (dateCode.length() > 4)
+            throw new IllegalArgumentException("length insufficient");
+    }
+
+    /**
+     * Infers conveyance type (Air, Ocean, or Surface) from format of parameter
+     *
+     * @param dateCode value to inspect
+     * @return string value Air, Ocean, or Surface
+     */
+    private String getConveyanceTypeFromDateCode(String dateCode) {
+        String conveyanceType = "Air";
+
+        if (dateCode.length() == 4) conveyanceType = "Ocean";
+        if (dateCode.length() == 3) {
+            if (dateCode.substring(0, 1).toUpperCase().matches("\\d")) conveyanceType = "Surface";
+        }
+
+        return conveyanceType;
+    }
+
     private void launchDateResultsActivityWithCode(String dateCode) {
         List<Date> dates;
 
         try {
+            // Verify length is either 3 or 4
+            validateDateCodeLength(dateCode);
+
+            // Infer conveyance type based on format of entered value
+            String conveyanceType = getConveyanceTypeFromDateCode(dateCode);
+
             // Get list of dates corresponding with date code
             dates = DateCode.getInstance().getCalendarDatesForDateCode(dateCode);
 
@@ -144,8 +183,9 @@ public class MainActivity extends AppCompatActivity
 
             // Prepare bundle to pass to intent
             Bundle bundle = new Bundle();
+            bundle.putString("DateCode", dateCode);
+            bundle.putString("ConveyanceType", conveyanceType);
             bundle.putStringArrayList("DateList", (ArrayList)values);
-            bundle.putString("DateCodeBuilder", dateCode);
 
             // Prepare intent and start
             Intent intent = new Intent(this, DateResultsActivity.class);
