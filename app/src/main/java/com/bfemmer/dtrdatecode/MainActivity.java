@@ -38,7 +38,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.bfemmer.dtrdatecode.model.DateCodeBuilderFactory;
+import com.bfemmer.dtrdatecodelib.DateCodeBuilderFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateCodeDisplay() {
-        String manifestType = sharedPreferences.getString("conveyance_list", ConveyanceType.Air.toString());
+        String manifestType = sharedPreferences.getString("conveyance_list", "Air");
         dateCodeTextView.setText(DateCodeBuilderFactory.getDateCodeBuilder((manifestType)).getCode());
     }
 

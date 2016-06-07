@@ -21,19 +21,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-package com.bfemmer.dtrdatecode.model;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+package com.bfemmer.dtrdatecodelib;
 
 /**
  * Created by bfemmer on 6/7/2016.
  */
-public interface DateCodeBuilder {
-    String getCode();
-    String getCode(Calendar calendar);
-    List<Date> getCalendarDatesForCode (String dateCode);
-    boolean isValidFormat(String dateCode);
+public class DateCodeBuilderFactory {
+    public static DateCodeBuilder getDateCodeBuilder(String conveyanceType) {
+        if ( conveyanceType.equals("Air") )
+            return new AirDateCodeBuilder();
+        else if ( conveyanceType.equals("Ocean") )
+            return new OceanDateCodeBuilder();
+        else if ( conveyanceType.equals("Surface") )
+            return new SurfaceDateCodeBuilder();
+
+        return null;
+    }
 }
