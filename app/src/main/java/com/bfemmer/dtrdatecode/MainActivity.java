@@ -173,7 +173,9 @@ public class MainActivity extends AppCompatActivity
             String conveyanceType = getConveyanceTypeFromDateCode(dateCode);
 
             // Get list of dates corresponding with date code
-            dates = DateCode.getInstance().getCalendarDatesForDateCode(dateCode);
+            dates = DateCodeBuilderFactory
+                    .getDateCodeBuilder(conveyanceType)
+                    .getCalendarDatesForCode(dateCode);
 
             // Convert date list to string list
             List<String> values = new ArrayList<>();
