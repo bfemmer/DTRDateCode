@@ -21,11 +21,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -35,7 +38,10 @@ import android.text.format.Time;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
 
+import com.bfemmer.dtrdatecodelib.DateCodeBuilderFactory;
+
 import java.lang.ref.WeakReference;
+import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -43,7 +49,7 @@ import java.util.concurrent.TimeUnit;
  * Digital watch face with seconds. In ambient mode, the seconds aren't displayed. On devices with
  * low-bit ambient mode, the text is drawn without anti-aliasing in ambient mode.
  */
-public class DTRWatchFace extends CanvasWatchFaceService {
+public class DTRWatchFaceService extends CanvasWatchFaceService {
     private static final Typeface NORMAL_TYPEFACE =
             Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
 
@@ -64,15 +70,15 @@ public class DTRWatchFace extends CanvasWatchFaceService {
     }
 
     private static class EngineHandler extends Handler {
-        private final WeakReference<DTRWatchFace.Engine> mWeakReference;
+        private final WeakReference<DTRWatchFaceService.Engine> mWeakReference;
 
-        public EngineHandler(DTRWatchFace.Engine reference) {
+        public EngineHandler(DTRWatchFaceService.Engine reference) {
             mWeakReference = new WeakReference<>(reference);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            DTRWatchFace.Engine engine = mWeakReference.get();
+            DTRWatchFaceService.Engine engine = mWeakReference.get();
             if (engine != null) {
                 switch (msg.what) {
                     case MSG_UPDATE_TIME:
@@ -89,7 +95,10 @@ public class DTRWatchFace extends CanvasWatchFaceService {
         Paint mBackgroundPaint;
         Paint mTextPaint;
         boolean mAmbient;
+        Bitmap mBackgroundBitmap;
+        Bitmap mBackgroundScaledBitmap;
         Time mTime;
+        String dateCode;
         final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -112,13 +121,13 @@ public class DTRWatchFace extends CanvasWatchFaceService {
         public void onCreate(SurfaceHolder holder) {
             super.onCreate(holder);
 
-            setWatchFaceStyle(new WatchFaceStyle.Builder(DTRWatchFace.this)
+            setWatchFaceStyle(new WatchFaceStyle.Builder(DTRWatchFaceService.this)
                     .setCardPeekMode(WatchFaceStyle.PEEK_MODE_VARIABLE)
                     .setBackgroundVisibility(WatchFaceStyle.BACKGROUND_VISIBILITY_INTERRUPTIVE)
                     .setShowSystemUiTime(false)
                     .setAcceptsTapEvents(true)
                     .build());
-            Resources resources = DTRWatchFace.this.getResources();
+            Resources resources = DTRWatchFaceService.this.getResources();
             mYOffset = resources.getDimension(R.dimen.digital_y_offset);
 
             mBackgroundPaint = new Paint();
@@ -126,6 +135,9 @@ public class DTRWatchFace extends CanvasWatchFaceService {
 
             mTextPaint = new Paint();
             mTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
+
+            Drawable backgroundDrawable = resources.getDrawable(R.drawable.usaf38th_aps_patch_trans, null /* theme */);
+            mBackgroundBitmap = ((BitmapDrawable) backgroundDrawable).getBitmap();
 
             mTime = new Time();
         }
@@ -169,7 +181,7 @@ public class DTRWatchFace extends CanvasWatchFaceService {
             }
             mRegisteredTimeZoneReceiver = true;
             IntentFilter filter = new IntentFilter(Intent.ACTION_TIMEZONE_CHANGED);
-            DTRWatchFace.this.registerReceiver(mTimeZoneReceiver, filter);
+            DTRWatchFaceService.this.registerReceiver(mTimeZoneReceiver, filter);
         }
 
         private void unregisterReceiver() {
@@ -177,7 +189,7 @@ public class DTRWatchFace extends CanvasWatchFaceService {
                 return;
             }
             mRegisteredTimeZoneReceiver = false;
-            DTRWatchFace.this.unregisterReceiver(mTimeZoneReceiver);
+            DTRWatchFaceService.this.unregisterReceiver(mTimeZoneReceiver);
         }
 
         @Override
@@ -185,7 +197,7 @@ public class DTRWatchFace extends CanvasWatchFaceService {
             super.onApplyWindowInsets(insets);
 
             // Load resources that have alternate values for round watches.
-            Resources resources = DTRWatchFace.this.getResources();
+            Resources resources = DTRWatchFaceService.this.getResources();
             boolean isRound = insets.isRound();
             mXOffset = resources.getDimension(isRound
                     ? R.dimen.digital_x_offset_round : R.dimen.digital_x_offset);
@@ -215,6 +227,7 @@ public class DTRWatchFace extends CanvasWatchFaceService {
                 if (mLowBitAmbient) {
                     mTextPaint.setAntiAlias(!inAmbientMode);
                 }
+
                 invalidate();
             }
 
@@ -229,22 +242,33 @@ public class DTRWatchFace extends CanvasWatchFaceService {
          */
         @Override
         public void onTapCommand(int tapType, int x, int y, long eventTime) {
-            Resources resources = DTRWatchFace.this.getResources();
-            switch (tapType) {
-                case TAP_TYPE_TOUCH:
-                    // The user has started touching the screen.
-                    break;
-                case TAP_TYPE_TOUCH_CANCEL:
-                    // The user has started a different gesture or otherwise cancelled the tap.
-                    break;
-                case TAP_TYPE_TAP:
-                    // The user has completed the tap gesture.
-                    mTapCount++;
-                    mBackgroundPaint.setColor(resources.getColor(mTapCount % 2 == 0 ?
-                            R.color.background : R.color.background2));
-                    break;
+//            Resources resources = DTRWatchFaceService.this.getResources();
+//            switch (tapType) {
+//                case TAP_TYPE_TOUCH:
+//                    // The user has started touching the screen.
+//                    break;
+//                case TAP_TYPE_TOUCH_CANCEL:
+//                    // The user has started a different gesture or otherwise cancelled the tap.
+//                    break;
+//                case TAP_TYPE_TAP:
+//                    // The user has completed the tap gesture.
+//                    mTapCount++;
+//                    mBackgroundPaint.setColor(resources.getColor(mTapCount % 2 == 0 ?
+//                            R.color.background : R.color.background2));
+//                    break;
+//            }
+//            invalidate();
+        }
+
+        @Override
+        public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            if (mBackgroundScaledBitmap == null
+                    || mBackgroundScaledBitmap.getWidth() != width
+                    || mBackgroundScaledBitmap.getHeight() != height) {
+                mBackgroundScaledBitmap = Bitmap.createScaledBitmap(mBackgroundBitmap,
+                        width - 40, height - 20, true /* filter */);
             }
-            invalidate();
+            super.onSurfaceChanged(holder, format, width, height);
         }
 
         @Override
@@ -254,14 +278,46 @@ public class DTRWatchFace extends CanvasWatchFaceService {
                 canvas.drawColor(Color.BLACK);
             } else {
                 canvas.drawRect(0, 0, bounds.width(), bounds.height(), mBackgroundPaint);
+                // Draw the background, scaled to fit.
+                canvas.drawBitmap(mBackgroundScaledBitmap, 20, 10, null);
             }
 
             // Draw H:MM in ambient mode or H:MM:SS in interactive mode.
             mTime.setToNow();
-            String text = mAmbient
+            String timeText = mAmbient
                     ? String.format("%d:%02d", mTime.hour, mTime.minute)
                     : String.format("%d:%02d:%02d", mTime.hour, mTime.minute, mTime.second);
-            canvas.drawText(text, mXOffset, mYOffset, mTextPaint);
+
+            mXOffset = computeXOffset(timeText, mTextPaint, bounds);
+            mYOffset = computeTimeYOffset(timeText, mTextPaint, bounds);
+            canvas.drawText(timeText, mXOffset, mYOffset, mTextPaint);
+
+            dateCode = DateCodeBuilderFactory.getDateCodeBuilder("Air").getCode();
+            mXOffset = computeXOffset(dateCode, mTextPaint, bounds);
+            mYOffset = computeDateYOffset(timeText, mTextPaint, bounds);
+            canvas.drawText(dateCode, mXOffset, mYOffset, mTextPaint);
+        }
+
+        private float computeXOffset(String text, Paint paint, Rect watchBounds) {
+            float centerX = watchBounds.exactCenterX();
+            float timeLength = paint.measureText(text);
+            return centerX - (timeLength / 2.0f);
+        }
+
+        private float computeTimeYOffset(String timeText, Paint timePaint, Rect watchBounds) {
+            float centerY = watchBounds.exactCenterY();
+            Rect textBounds = new Rect();
+            timePaint.getTextBounds(timeText, 0, timeText.length(), textBounds);
+            int textHeight = textBounds.height();
+            return centerY + (textHeight / 2.0f);
+        }
+
+        private float computeDateYOffset(String dateCode, Paint datePaint, Rect watchBounds) {
+            float centerY = watchBounds.exactCenterY();
+            Rect textBounds = new Rect();
+            datePaint.getTextBounds(dateCode, 0, dateCode.length(), textBounds);
+            int textHeight = textBounds.height();
+            return centerY - (textHeight / 2.0f);
         }
 
         /**
@@ -287,6 +343,7 @@ public class DTRWatchFace extends CanvasWatchFaceService {
          * Handle updating the time periodically in interactive mode.
          */
         private void handleUpdateTimeMessage() {
+            dateCode = DateCodeBuilderFactory.getDateCodeBuilder("Air").getCode();
             invalidate();
             if (shouldTimerBeRunning()) {
                 long timeMs = System.currentTimeMillis();

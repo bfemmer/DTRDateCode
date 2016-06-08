@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity
 
     private void updateCodeDisplay() {
         String manifestType = sharedPreferences.getString("conveyance_list", "Air");
-        dateCodeTextView.setText(DateCodeBuilderFactory.getDateCodeBuilder((manifestType)).getCode());
+        dateCodeTextView.setText(DateCodeBuilderFactory.getDateCodeBuilder(manifestType).getCode());
     }
 
     public void showDateCodeInputDialogFragment() {
