@@ -38,7 +38,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.bfemmer.dtrdatecodelib.DateCodeBuilderFactory;
+import com.bfemmer.datecodes.DateCodeBuilderFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

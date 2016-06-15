@@ -38,10 +38,9 @@ import android.text.format.Time;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
 
-import com.bfemmer.dtrdatecodelib.DateCodeBuilderFactory;
+import com.bfemmer.datecodes.DateCodeBuilderFactory;
 
 import java.lang.ref.WeakReference;
-import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -266,7 +265,7 @@ public class DTRWatchFaceService extends CanvasWatchFaceService {
                     || mBackgroundScaledBitmap.getWidth() != width
                     || mBackgroundScaledBitmap.getHeight() != height) {
                 mBackgroundScaledBitmap = Bitmap.createScaledBitmap(mBackgroundBitmap,
-                        width - 40, height - 20, true /* filter */);
+                        width - 60, height - 20, true /* filter */);
             }
             super.onSurfaceChanged(holder, format, width, height);
         }
@@ -279,7 +278,7 @@ public class DTRWatchFaceService extends CanvasWatchFaceService {
             } else {
                 canvas.drawRect(0, 0, bounds.width(), bounds.height(), mBackgroundPaint);
                 // Draw the background, scaled to fit.
-                canvas.drawBitmap(mBackgroundScaledBitmap, 20, 10, null);
+                canvas.drawBitmap(mBackgroundScaledBitmap, 30, 10, null);
             }
 
             // Draw H:MM in ambient mode or H:MM:SS in interactive mode.
@@ -317,7 +316,7 @@ public class DTRWatchFaceService extends CanvasWatchFaceService {
             Rect textBounds = new Rect();
             datePaint.getTextBounds(dateCode, 0, dateCode.length(), textBounds);
             int textHeight = textBounds.height();
-            return centerY - (textHeight / 2.0f);
+            return centerY - (textHeight / 1.5f);
         }
 
         /**
