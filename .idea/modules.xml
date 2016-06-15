@@ -3,7 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/DTRDateCode.iml" filepath="$PROJECT_DIR$/DTRDateCode.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dtrmobile/dtrmobile.iml" filepath="$PROJECT_DIR$/dtrmobile/dtrmobile.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dtrwatch/dtrwatch.iml" filepath="$PROJECT_DIR$/dtrwatch/dtrwatch.iml" />
     </modules>
   </component>
 </project>
